@@ -2,11 +2,10 @@
 :GPTEL_MODEL: gpt-4o
 :GPTEL_BACKEND: ChatGPT
 :GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
-:GPTEL_BOUNDS: ((753 . 1132) (1236 . 1367) (1369 . 1474) (1491 . 1644) (1662 . 1876) (1889 . 2174) (2201 . 2614) (2646 . 2910) (2935 . 3200) (3218 . 3568) (3587 . 3736) (3749 . 3974) (3997 . 4699) (4715 . 4993) (5018 . 5203) (5221 . 5597) (5627 . 5789) (5794 . 6027) (6032 . 6041) (6064 . 6130) (6157 . 6269) (6275 . 6294) (6311 . 6428) (6483 . 6624) (6644 . 6785) (6791 . 7089) (7095 . 7535) (7549 . 8996) (9015 . 9155) (9168 . 9314) (9332 . 9455) (9472 . 9596))
+:GPTEL_BOUNDS: ((689 . 1068) (1116 . 1247) (1249 . 1354) (1371 . 1524) (1542 . 1756) (1769 . 2054) (2081 . 2494) (2526 . 2790) (2815 . 3080) (3098 . 3448) (3467 . 3616) (3629 . 3854) (3877 . 4579) (4595 . 4873) (4898 . 5083) (5101 . 5477) (5507 . 5669) (5674 . 5907) (5912 . 5921) (5944 . 6010) (6037 . 6149) (6155 . 6174) (6191 . 6308) (6363 . 6504) (6524 . 6665) (6671 . 6969) (6975 . 7415) (7429 . 8876) (8895 . 9035) (9048 . 9194) (9212 . 9335) (9352 . 9476))
 :END:
 
 * What are all of the components of a RAG pipeline?
-when showing a chart would help, create the chart with plantuml
 
 #+begin_src plantuml
 @startuml
@@ -24,8 +23,7 @@ Postprocessing -> User : Final Output
 @enduml
 #+end_src
 
-#+RESULTS:
-[[file:/var/folders/pc/fmm1wp655gb7wmw5ph6lqh2m0000gn/T/babel-F7Tyfp/plantuml-541Ks4.png]]
+[[file:diagrams/rag_pipeline_components.svg]]
 
 This UML diagram outlines the flow of data from the user query to the final response, with each component interacting sequentially.
 
