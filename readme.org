@@ -2,7 +2,7 @@
 :GPTEL_MODEL: gpt-4o
 :GPTEL_BACKEND: ChatGPT
 :GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
-:GPTEL_BOUNDS: ((689 . 1068) (1116 . 1247) (1249 . 1354) (1371 . 1524) (1582 . 1796) (1809 . 2094) (2121 . 2534) (2566 . 2830) (2855 . 3120) (3138 . 3488) (3507 . 3656) (3669 . 3894) (3917 . 4619) (4635 . 4913) (4938 . 5123) (5141 . 5517) (5547 . 5709) (5714 . 5947) (5952 . 5961) (5984 . 6050) (6077 . 6189) (6195 . 6214) (6231 . 6348) (6403 . 6544) (6564 . 6705) (6711 . 7009) (7015 . 7455) (7469 . 8916) (8935 . 9075) (9088 . 9234) (9252 . 9375) (9392 . 9516))
+:GPTEL_BOUNDS: ((689 . 1068) (1116 . 1247) (1249 . 1354) (1371 . 1526) (1584 . 1798) (1811 . 2102) (2129 . 2550) (2582 . 2850) (2875 . 3144) (3162 . 3512) (3572 . 3721) (3734 . 3963) (3986 . 4700) (4716 . 4998) (5023 . 5212) (5230 . 5610) (5640 . 5802) (5807 . 6044) (6049 . 6058) (6081 . 6147) (6174 . 6286) (6292 . 6311) (6328 . 6445) (6500 . 6643) (6663 . 6804) (6810 . 7114) (7120 . 7566) (7580 . 9037) (9056 . 9196) (9209 . 9357) (9375 . 9498) (9515 . 9639))
 :END:
 
 * What are all of the components of a RAG pipeline?
@@ -25,79 +25,115 @@ Postprocessing -> User : Final Output
 
 [[file:diagrams/rag_pipeline_components.svg]]
 
-This UML diagram outlines the flow of data from the user query to the final response, with each component interacting sequentially.
+This UML diagram outlines the flow of data from the user query to the final
+response, with each component interacting sequentially.
 
-A Retrieval-Augmented Generation (RAG) pipeline consists of several key components. Here's a breakdown:
+A Retrieval-Augmented Generation (RAG) pipeline consists of several key
+components. Here's a breakdown:
 
 ** Preprocessing
-- Purpose: Processes the input data and prepares it for the retriever and generator.
+- Purpose: Processes the input data and prepares it for the retriever and
+  generator.
 - Tasks: Tokenization, normalization, and conversion to embeddings.
 
 *** [[file:preprocessor/tokenization.org][Tokenization]]
-Tokenization is the process of breaking down a text into smaller units called tokens. These tokens can be words, phrases, or even characters, depending on the model and application. Here's a detailed explanation:
+Tokenization is the process of breaking down a text into smaller units called
+tokens. These tokens can be words, phrases, or even characters, depending on the
+model and application. Here's a detailed explanation:
 
 **** Purpose
-- Facilitates Analysis: Tokenization makes it easier to analyze and process text by breaking it into manageable pieces.
-- Foundation for NLP: It's a fundamental step in natural language processing (NLP) tasks, enabling the conversion of text into a format that models can understand.
+- Facilitates Analysis: Tokenization makes it easier to analyze and process text
+  by breaking it into manageable pieces.
+- Foundation for NLP: It's a fundamental step in natural language processing
+  (NLP) tasks, enabling the conversion of text into a format that models can
+  understand.
 
 **** Types of Tokenization
-- Word Tokenization: Splits the text into individual words. For example, "Hello, world!" becomes ["Hello", ",", "world", "!"].
-- Subword Tokenization: Breaks words into subword units. This is useful for handling out-of-vocabulary words and is commonly used in BPE (Byte Pair Encoding) and WordPiece.
-- Character Tokenization: Treats each character as a token. Useful for languages without clear word boundaries.
+- Word Tokenization: Splits the text into individual words. For example, "Hello,
+  world!" becomes ["Hello", ",", "world", "!"].
+- Subword Tokenization: Breaks words into subword units. This is useful for
+  handling out-of-vocabulary words and is commonly used in BPE (Byte Pair
+  Encoding) and WordPiece.
+- Character Tokenization: Treats each character as a token. Useful for languages
+  without clear word boundaries.
 
 **** Challenges in Tokenization
-- Language Variability: Different languages have different tokenization needs (e.g., Chinese vs. English).
+- Language Variability: Different languages have different tokenization needs
+  (e.g., Chinese vs. English).
 - Ambiguities: Words like "I've" may need to be split into ["I", "'ve"].
-- Punctuation Handling: Determining whether punctuation should be separate tokens.
+- Punctuation Handling: Determining whether punctuation should be separate
+  tokens.
 
 **** Tools and Libraries
-- NLTK (Natural Language Toolkit): Offers various tokenization functions for different languages.
+- NLTK (Natural Language Toolkit): Offers various tokenization functions for
+  different languages.
 - spaCy: Provides efficient and customizable tokenization strategies.
-- Transformers Libraries: Often include tokenizers tailored for specific models like BERT, GPT.
+- Transformers Libraries: Often include tokenizers tailored for specific models
+  like BERT, GPT.
 
 **** Applications
 - Text Preprocessing: Preparing data for analysis or ML models.
 - Search Engines: Improving text indexing and retrieval.
 - Sentiment Analysis: Understanding sentiment by analyzing word-level tokens.
 
-Tokenization is a crucial step in converting unstructured text into a structured format, enabling efficient and accurate text processing and analysis.
-*** Normalization
-Normalization in text processing refers to the transformation of text into a consistent, standard format. This process involves several techniques:
+Tokenization is a crucial step in converting unstructured text into a structured
+format, enabling efficient and accurate text processing and analysis.
+*** [[file:preprocessor/normalization.org][Normalization]]
+Normalization in text processing refers to the transformation of text into a
+consistent, standard format. This process involves several techniques:
 
 **** Purpose
-- Consistency: Ensures uniformity across text data, improving the reliability of text analysis and machine learning models.
-- Reduction of Variability: Minimizes differences due to case, formatting, or typographical errors.
+- Consistency: Ensures uniformity across text data, improving the reliability of
+  text analysis and machine learning models.
+- Reduction of Variability: Minimizes differences due to case, formatting, or
+  typographical errors.
 
 **** Common Techniques
-- Lowercasing: Converts all characters to lowercase to avoid distinctions based on capitalization (e.g., "Apple" and "apple").
-- Removing Punctuation: Strips out punctuation marks to focus on the words themselves.
-- Stemming: Reduces words to their root forms (e.g., "running" to "run") using algorithms like Porter or Snowball stemmers.
-- Lemmatization: Converts words to their base or dictionary form, considering context (e.g., "better" to "good").
-- Removing Stop Words: Eliminates common words like "and", "is", "in" that often provide little informational value.
-- Unicode Normalization: Converts text into a standard Unicode format to handle characters consistently across different encodings.
+- Lowercasing: Converts all characters to lowercase to avoid distinctions based
+  on capitalization (e.g., "Apple" and "apple").
+- Removing Punctuation: Strips out punctuation marks to focus on the words
+  themselves.
+- Stemming: Reduces words to their root forms (e.g., "running" to "run") using
+  algorithms like Porter or Snowball stemmers.
+- Lemmatization: Converts words to their base or dictionary form, considering
+  context (e.g., "better" to "good").
+- Removing Stop Words: Eliminates common words like "and", "is", "in" that often
+  provide little informational value.
+- Unicode Normalization: Converts text into a standard Unicode format to handle
+  characters consistently across different encodings.
 
 **** Challenges
-- Language Dependencies: Different languages may require specific normalization techniques.
-- Context Sensitivity: Stemming and lemmatization may lead to loss of meaning if context is not considered.
+- Language Dependencies: Different languages may require specific normalization
+  techniques.
+- Context Sensitivity: Stemming and lemmatization may lead to loss of meaning if
+  context is not considered.
 - Loss of Information: Over-normalization can strip away useful information.
 
 **** Tools and Libraries
-- NLTK (Natural Language Toolkit): Offers modules for stemming, lemmatization, and stop word removal.
-- spaCy: Provides advanced lemmatization and other preprocessing functionalities.
+- NLTK (Natural Language Toolkit): Offers modules for stemming, lemmatization,
+  and stop word removal.
+- spaCy: Provides advanced lemmatization and other preprocessing
+  functionalities.
 
 **** Applications
 - Search Engines: Improves indexing and retrieval accuracy.
-- Sentiment Analysis: Enhances the understanding of sentiment by focusing on base forms of words.
-- Machine Translation: Ensures consistency in text, making translation more reliable.
+- Sentiment Analysis: Enhances the understanding of sentiment by focusing on
+  base forms of words.
+- Machine Translation: Ensures consistency in text, making translation more
+  reliable.
 
-Normalization is crucial for effective text analysis, reducing noise, and ensuring that text data is processed in a meaningful way.
+Normalization is crucial for effective text analysis, reducing noise, and
+ensuring that text data is processed in a meaningful way.
 *** Conversion to embeddings
-Conversion to embeddings involves transforming text data into numerical vectors that can be processed by machine learning models. Here's a detailed explanation:
+Conversion to embeddings involves transforming text data into numerical vectors
+that can be processed by machine learning models. Here's a detailed explanation:
 
 **** Purpose
 
-- Numerical Representation: Converts text into a format that algorithms can understand and analyze.
-- Capture Semantic Meaning: Represents words or phrases in a way that captures their contextual meaning and relationships.
+- Numerical Representation: Converts text into a format that algorithms can
+  understand and analyze.
+- Capture Semantic Meaning: Represents words or phrases in a way that captures
+  their contextual meaning and relationships.
 
 **** Process
 
@@ -117,7 +153,8 @@ Conversion to embeddings involves transforming text data into numerical vectors 
 
 ****** GloVe (Global Vectors for Word Representation):
 - Relies on word co-occurrence statistics from a corpus.
-- Generates vectors where semantic relationships are captured by vector distances.
+- Generates vectors where semantic relationships are captured by vector
+  distances.
 
 ***** Transformers:
 - Uses complex models (e.g., BERT, GPT) to create context-aware embeddings.
@@ -125,37 +162,50 @@ Conversion to embeddings involves transforming text data into numerical vectors 
 
 ***** Challenges
 
-- Dimensionality: High-dimensional vectors can lead to increased computational cost.
-- Out-of-Vocabulary Words: New or rare words may not have pre-trained embeddings.
-- Context Sensitivity: Traditional embeddings like Word2Vec may lack context sensitivity, which transformers address.
+- Dimensionality: High-dimensional vectors can lead to increased computational
+  cost.
+- Out-of-Vocabulary Words: New or rare words may not have pre-trained
+  embeddings.
+- Context Sensitivity: Traditional embeddings like Word2Vec may lack context
+  sensitivity, which transformers address.
 
 ***** Applications
 
-- Search and Information Retrieval: Improves the matching of queries with relevant documents.
-- Recommendation Systems: Helps in understanding user preferences based on textual data.
-- NLP Tasks: Powers tasks like sentiment analysis, translation, and summarization.
+- Search and Information Retrieval: Improves the matching of queries with
+  relevant documents.
+- Recommendation Systems: Helps in understanding user preferences based on
+  textual data.
+- NLP Tasks: Powers tasks like sentiment analysis, translation, and
+  summarization.
 
-Embeddings are crucial in modern NLP applications, enabling complex models to perform tasks that require understanding of language at a deep, contextual level.
+Embeddings are crucial in modern NLP applications, enabling complex models to
+perform tasks that require understanding of language at a deep, contextual
+level.
 ** Retriever
-- Purpose: Retrieves relevant documents from the document store based on the query.
+- Purpose: Retrieves relevant documents from the document store based on the
+  query.
 - Methods: Dense retrieval (e.g., embeddings) or sparse retrieval (e.g., BM25).
 *** Dense Retrieval
 
 ***** Purpose
-- Uses vector representations to improve retrieval by capturing semantic meaning.
+- Uses vector representations to improve retrieval by capturing semantic
+  meaning.
 
 ***** Techniques
 - Uses embeddings to convert queries and documents to vectors.
 - Employs similarity measures like cosine similarity to match vectors.
 
 ***** Tools and Libraries
-- FAISS (Facebook AI Similarity Search): Efficient similarity search and clustering of dense vectors.
-- Transformers: Provides pre-trained models like BERT for generating dense embeddings.
+- FAISS (Facebook AI Similarity Search): Efficient similarity search and
+  clustering of dense vectors.
+- Transformers: Provides pre-trained models like BERT for generating dense
+  embeddings.
 
 *** Sparse Retrieval
 
 ***** Purpose
-- Matches query terms directly with document terms without capturing semantic meaning.
+- Matches query terms directly with document terms without capturing semantic
+  meaning.
 
 ***** Techniques
 - Uses term frequency-inverse document frequency (TF-IDF) and BM25 for scoring.
@@ -174,13 +224,15 @@ Embeddings are crucial in modern NLP applications, enabling complex models to pe
 - Search Engines: Retrieval of relevant documents or web pages.
 - Question Answering: Finding potential answers from large text corpora.
 
-Retrievers are essential for narrowing down a vast amount of information to the most relevant data for further processing.
+Retrievers are essential for narrowing down a vast amount of information to the
+most relevant data for further processing.
 ** Document Store
 - Purpose: Stores the documents or data that the model will reference.
 - Examples: Elasticsearch, PostgreSQL, or simple in-memory storage.
 
 ** Generator
-- Purpose: Generates text or answers using retrieved documents and a language model.
+- Purpose: Generates text or answers using retrieved documents and a language
+  model.
 - Examples: Fine-tuned transformer models like BERT, GPT-3.
 
 ** Postprocessing
