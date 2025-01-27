@@ -1,0 +1,144 @@
+:PROPERTIES:
+:GPTEL_MODEL: gpt-4o
+:GPTEL_BACKEND: ChatGPT
+:GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
+:GPTEL_BOUNDS: ((545 . 1631) (1934 . 1996) (2001 . 2020) (2042 . 2044) (2270 . 3078) (3207 . 3241) (3335 . 4070) (4543 . 5320) (5398 . 6464))
+:END:
+#+title: Tokenization
+
+[[file:~/Projects/rag-from-scratch/readme.org::*Tokenization][Overview of Tokenization]]
+
+Let's build a word tokenizer from scratch. Don't write any code. Explain to me,
+at a high level, how you would do it.
+
+To build a word tokenizer from scratch, follow these high-level steps:
+
+1. *Input Handling*
+   - Accept raw text input that needs tokenization.
+
+2. *Text Normalization*
+   - Pre-process the text by converting it to lowercase to ensure uniformity.
+   - Handle punctuation by defining rules to either remove or separate them based on your needs.
+
+3. *Whitespace Splitting*
+   - Use spaces or predefined delimiters to split text into segments, as words are typically separated by whitespace.
+
+4. *Handling Special Cases*
+   - Define rules for apostrophes (e.g., "don't" to ["do", "n't"]) and hyphenated words.
+   - Decide how to treat numbers, mixed alphanumeric string, and special characters.
+
+5. *Language Specific Rules*
+   - Consider any language-specific requirements or exceptions if designing for specific languages.
+
+6. *Output Tokens*
+   - Produce a list of tokens from the processed text, ensuring each token meets the predefined criteria.
+
+This structure will allow for basic word tokenization while keeping room for customization based on different applications and languages.
+
+* Tokenize
+#+name: tokenize
+#+begin_src ts :tangle yes
+function tokenize(text: string): string[] {
+    return splitIntoSegments(lowerCase(text)).map(handlePunctuation);
+}
+#+end_src
+* Normalize
+#+NAME: handlePunctuation
+#+begin_src ts :tangle yes
+function handlePunctuation(text: string): string {
+    const punctuationRegex = /[!"#$%&()*+,./:;<=>?@[\\\]^`{|}~]/g;
+    return text.replace(punctuationRegex, "");
+}
+#+end_src
+
+#+name: lowerCase
+#+begin_src ts :tangle yes
+function lowerCase(text: string): string {
+    return text.toLowerCase();
+}
+#+end_src
+
+How can I choose between removing punctuation and splitting text into segments?
+
+Choosing between removing punctuation and splitting text into segments involves considering the goal of your tokenization and the specific application:
+
+1. *Removing Punctuation*
+   - Use when punctuation does not add meaningful information for your application.
+   - Suitable for tasks like basic text analysis or certain NLP tasks where only words matter.
+   - Keeps tokens as clean word representations.
+
+2. *Splitting Text into Segments with Punctuation*
+   - Retain punctuation when it provides valuable context or data, such as in sentiment analysis or speech recognition.
+   - Essential for maintaining sentence structure, dialogue, or when punctuation alters the meaning or function of the text.
+
+Consider the linguistic needs and the downstream processing needs when deciding which approach to take.
+* Split into Segments
+#+name: splitIntoSegments
+#+begin_src ts :tangle yes
+function splitIntoSegments(text: string): string[] {
+    return text.split(/[\s-_]+/);
+}
+#+end_src
+
+When would I use "predefined delimeters" to split text, rather than whitespace?
+
+Use predefined delimiters to split text instead of whitespace when:
+
+1. Structured Data: The text contains structured data formats (e.g., CSV, TSV) where commas, tabs, or other characters separate entries.
+2. Custom Rules: Specific applications require splitting text based on custom criteria, such as splitting on hyphens or slashes.
+3. Non-Whitespace Separation: Languages or formats use characters other than spaces to delimit words or phrases (e.g., scriptio continua in Latin, certain Asian languages).
+4. Preserving Meaning: Delimiters carry semantic weight important for analysis, such as splitting a paragraph based on sentence-end punctuation.
+
+Choosing delimiters depends on the structure and purpose of your text processing.
+
+I'm guessing most =-= and =_= should be used for splitting, rather than removing?
+* Handle Special Cases
+I'm deciding not to implement this because it depends heavily on context, and I
+have no specific context in mind for this exercise
+#+name: handleSpecialCases
+#+begin_src ts :tangle yes
+// function handleSpecialCases(text: string): string {
+//     return "";
+// }
+#+end_src
+** What do I need to consider when deciding how to handle apostrophes and hyphenated words?
+
+When handling apostrophes and hyphenated words, consider the following:
+
+1. Apostrophes:
+   - Contractions: Decide whether to split them (e.g., "don't" to ["do", "n't"]) or keep them intact, based on whether retaining full words is beneficial.
+   - Possessives: Consider if possessives (e.g., "Sarah's") are treated as separate entities like ["Sarah", "'s"] or kept as one.
+
+2. Hyphenated Words:
+   - Compound Words: Evaluate if hyphenated compounds (e.g., "well-being") should remain as single tokens or split into parts.
+   - Context Sensitivity: In some contexts, a hyphen changes meaning significantly, so understand the domain-specific usage.
+
+Decide based on linguistic model requirements and the application domain to maintain or modify text integrity during processing.
+
+** what about numbers, mixed alphanumeric strings, and special characters?
+
+When handling numbers, mixed alphanumeric strings, and special characters, consider these aspects:
+
+1. Numbers:
+   - Preservation: Typically, keep numbers intact unless the application requires normalization (e.g., converting "123" to "one hundred twenty-three").
+   - Separation: Decide if numbers adjacent to words should be split (e.g., "item123" to ["item", "123"]) based on analysis needs.
+
+2. Mixed Alphanumeric Strings:
+   - Splitting: Consider splitting based on context, like when identifiers (e.g., "abc123") need decomposition for analysis.
+   - Usage Context: Ensure meaningful data representation, especially in datasets or error codes where alphanumeric strings are unique.
+
+3. Special Characters:
+   - Relevance: Assess if special characters add syntactic or semantic value (e.g., hashtags like "#AI").
+   - Removal: Remove if they contribute noise or distract from analysis objectives, especially when focusing solely on word content.
+
+Decide based on the text processing goals, domain-specific language nuances, and downstream analysis requirements.
+
+* Improvements
+since this is all theoretical, I'm not going to get into more detail here now.
+But these are things that could be done to improve tokenization
+** do all of this in a single pass, using a parser
+** handle special cases, language-specific rules, punctuation, apostrophes, etc depending on the context
+* Questions
+** should =tokenizer= return something more informative than =string[]=?
+I'm not sure if we might need to know more information about the token, like
+it's location within the larger document, etc

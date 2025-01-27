@@ -2,7 +2,7 @@
 :GPTEL_MODEL: gpt-4o
 :GPTEL_BACKEND: ChatGPT
 :GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
-:GPTEL_BOUNDS: ((689 . 1068) (1116 . 1247) (1249 . 1354) (1371 . 1524) (1542 . 1756) (1769 . 2054) (2081 . 2494) (2526 . 2790) (2815 . 3080) (3098 . 3448) (3467 . 3616) (3629 . 3854) (3877 . 4579) (4595 . 4873) (4898 . 5083) (5101 . 5477) (5507 . 5669) (5674 . 5907) (5912 . 5921) (5944 . 6010) (6037 . 6149) (6155 . 6174) (6191 . 6308) (6363 . 6504) (6524 . 6665) (6671 . 6969) (6975 . 7415) (7429 . 8876) (8895 . 9035) (9048 . 9194) (9212 . 9335) (9352 . 9476))
+:GPTEL_BOUNDS: ((689 . 1068) (1116 . 1247) (1249 . 1354) (1371 . 1524) (1582 . 1796) (1809 . 2094) (2121 . 2534) (2566 . 2830) (2855 . 3120) (3138 . 3488) (3507 . 3656) (3669 . 3894) (3917 . 4619) (4635 . 4913) (4938 . 5123) (5141 . 5517) (5547 . 5709) (5714 . 5947) (5952 . 5961) (5984 . 6050) (6077 . 6189) (6195 . 6214) (6231 . 6348) (6403 . 6544) (6564 . 6705) (6711 . 7009) (7015 . 7455) (7469 . 8916) (8935 . 9075) (9088 . 9234) (9252 . 9375) (9392 . 9516))
 :END:
 
 * What are all of the components of a RAG pipeline?
@@ -33,7 +33,7 @@ A Retrieval-Augmented Generation (RAG) pipeline consists of several key componen
 - Purpose: Processes the input data and prepares it for the retriever and generator.
 - Tasks: Tokenization, normalization, and conversion to embeddings.
 
-*** Tokenization
+*** [[file:preprocessor/tokenization.org][Tokenization]]
 Tokenization is the process of breaking down a text into smaller units called tokens. These tokens can be words, phrases, or even characters, depending on the model and application. Here's a detailed explanation:
 
 **** Purpose
