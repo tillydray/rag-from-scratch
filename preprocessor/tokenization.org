@@ -2,7 +2,7 @@
 :GPTEL_MODEL: gpt-4o
 :GPTEL_BACKEND: ChatGPT
 :GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
-:GPTEL_BOUNDS: ((545 . 1631) (1934 . 1996) (2001 . 2020) (2042 . 2044) (2270 . 3078) (3207 . 3241) (3335 . 4070) (4543 . 5320) (5398 . 6464))
+:GPTEL_BOUNDS: ((489 . 1575) (2019 . 2053) (2147 . 2882) (3355 . 4132) (4210 . 5276))
 :END:
 #+title: Tokenization
 
@@ -38,40 +38,15 @@ This structure will allow for basic word tokenization while keeping room for cus
 * Tokenize
 #+name: tokenize
 #+begin_src ts :tangle yes
-function tokenize(text: string): string[] {
-    return splitIntoSegments(lowerCase(text)).map(handlePunctuation);
+import { lowerCase, handlePunctuation } from "./normalization";
+
+export function tokenize(text: string): string[] {
+  return splitIntoSegments(lowerCase(text)).map(handlePunctuation);
 }
 #+end_src
 * Normalize
-#+NAME: handlePunctuation
-#+begin_src ts :tangle yes
-function handlePunctuation(text: string): string {
-    const punctuationRegex = /[!"#$%&()*+,./:;<=>?@[\\\]^`{|}~]/g;
-    return text.replace(punctuationRegex, "");
-}
-#+end_src
+[[file:normalization.org][see normalization.org]]
 
-#+name: lowerCase
-#+begin_src ts :tangle yes
-function lowerCase(text: string): string {
-    return text.toLowerCase();
-}
-#+end_src
-
-How can I choose between removing punctuation and splitting text into segments?
-
-Choosing between removing punctuation and splitting text into segments involves considering the goal of your tokenization and the specific application:
-
-1. *Removing Punctuation*
-   - Use when punctuation does not add meaningful information for your application.
-   - Suitable for tasks like basic text analysis or certain NLP tasks where only words matter.
-   - Keeps tokens as clean word representations.
-
-2. *Splitting Text into Segments with Punctuation*
-   - Retain punctuation when it provides valuable context or data, such as in sentiment analysis or speech recognition.
-   - Essential for maintaining sentence structure, dialogue, or when punctuation alters the meaning or function of the text.
-
-Consider the linguistic needs and the downstream processing needs when deciding which approach to take.
 * Split into Segments
 #+name: splitIntoSegments
 #+begin_src ts :tangle yes

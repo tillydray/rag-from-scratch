@@ -1,0 +1,194 @@
+:PROPERTIES:
+:GPTEL_MODEL: gpt-4o
+:GPTEL_BACKEND: ChatGPT
+:GPTEL_SYSTEM: You are a large language model living in Emacs and a helpful assistant. Respond concisely.
+:GPTEL_BOUNDS: ((745 . 904) (930 . 1041) (1072 . 1238) (1420 . 1596) (1679 . 2507) (2807 . 2869) (2874 . 2893) (2915 . 2917) (2928 . 2930) (2967 . 3169) (3210 . 4168) (4207 . 5201) (5266 . 6904) (6933 . 7015) (7016 . 7047) (7048 . 7102) (7104 . 8026) (8027 . 8028) (8079 . 8282) (8300 . 8611))
+:END:
+#+title: Normalization
+
+[[file:~/Projects/rag-from-scratch/readme.org::*\[\[file:preprocessor/normalization.org\]\[Normalization\]\]][Overview of Normalization]]
+
+* Let's build a normalizer from scratch. Don't write any code. Explain to me, at a high level, how you would do it.
+
+A normalizer processes text to make it consistent and reduce variability. Below
+is a high-level sequence of steps you might follow to build one from scratch.
+
+** Step 1: Input Handling
+Accept raw text that needs normalization. Ensure your system can handle various
+encodings and character sets.
+
+** Step 2: Basic Normalization
+Lowercase all text to avoid capitalization inconsistencies. Apply standard
+Unicode normalization (such as NFC or NFD) to handle accented characters or
+special forms.
+
+#+name: lowerCase
+#+begin_src ts :tangle yes
+export function lowerCase(text: string): string {
+    return text.toLowerCase();
+}
+#+end_src
+** Step 3: Punctuation and Symbol Handling
+Decide whether you need to strip punctuation, separate it as its own tokens, or
+keep certain symbols based on your application (for example, hashtags in social
+media analysis).
+
+How can I choose between removing punctuation and splitting text into segments?
+
+Choosing between removing punctuation and splitting text into segments involves
+considering the goal of your tokenization and the specific application:
+
+1. *Removing Punctuation*
+   - Use when punctuation does not add meaningful information for your
+     application.
+   - Suitable for tasks like basic text analysis or certain NLP tasks where only
+     words matter.
+   - Keeps tokens as clean word representations.
+
+2. *Splitting Text into Segments with Punctuation*
+   - Retain punctuation when it provides valuable context or data, such as in
+     sentiment analysis or speech recognition.
+   - Essential for maintaining sentence structure, dialogue, or when punctuation
+     alters the meaning or function of the text.
+
+Consider the linguistic needs and the downstream processing needs when deciding
+which approach to take.
+
+I have chosen not to remove apostrophes, dashes, or underscores. Instead I've
+chosen to split on dashes and underscores, and to keep apostrophes as part of
+the word it exists within.
+#+NAME: handlePunctuation
+#+begin_src ts :tangle yes
+export function handlePunctuation(text: string): string {
+    const punctuationRegex = /[!"#$%&()*+,./:;<=>?@[\\\]^`{|}~]/g;
+    return text.replace(punctuationRegex, "");
+}
+#+end_src
+
+** Step 4: Stemming or Lemmatization
+Use either a stemmer (like Porter) to strip words down to rough roots or a
+lemmatizer to map words to their dictionary form. This step can be
+language-dependent and might require part-of-speech context.
+*** How would I write a Porter stemmer
+
+To write a simple Porter stemmer, follow these steps:
+
+1. Define Rules: Establish a series of suffix-stripping rules, divided into
+   steps, for transforming words into their stems by removing common
+   morphological endings.
+
+2. Create Functions: Implement functions for each step to apply the rules.
+   Ensure functions check for conditions and measure word stems' syllable counts
+   (known as "measures").
+
+3. Rule Application: Sequentially apply rules to the input word, transforming it
+   based on defined conditions (like the presence of specific suffixes or
+   syllable patterns).
+
+4. Iterate Through Steps: Proceed through each step, applying rules until no
+   more transformations are possible.
+
+5. Return Result: Output the stemmed version of the word.
+
+This process often involves handling edge cases and specific language nuances.
+Libraries or existing implementations, like NLTK in Python, often provide a
+reliable Porter stemmer out of the box.
+
+*** How would I write a lemmatizer?
+
+Writing a lemmatizer typically involves these steps:
+
+1. Dictionary or Lexicon: Use a comprehensive dictionary or lexical resource
+   (like WordNet) to map words to their lemmas.
+
+2. Part-of-Speech Tagging: Employ a POS tagger to identify a word's part of
+   speech. Lemmatization depends heavily on context, so knowing whether a word
+   is a noun, verb, etc., is crucial.
+
+3. Lookup and Rules: Implement a lookup mechanism that uses the POS tag to
+   retrieve the correct lemma. You may also define grammar rules to handle cases
+   not covered by your dictionary.
+
+4. Iterative Processing: Process each word in the text, determining its POS, and
+   transforming it to its lemma using the dictionary or rules.
+
+5. Output Normalized Words: Assemble the normalized text or list of lemmatized
+   tokens.
+
+Building a lemmatizer from scratch can be complex due to the need for accurate
+linguistic data and processing capabilities, so leveraging existing tools and
+libraries is generally recommended.
+*** Compare a porter stemmer algo with a snowball stemmer algo
+
+Both the Porter stemmer and the Snowball stemmer are designed for reducing words
+to their base or root form. Here’s a comparison:
+
+1. Complexity and Rules:
+   - Porter Stemmer: Simpler, with a set of heuristic rules split into multiple
+     steps. These rules are more straightforward but less comprehensive than
+     those of the Snowball stemmer.
+   - Snowball Stemmer: An improvement and generalization of the Porter stemmer.
+     It introduces more rules and handles different suffixes better, offering
+     increased accuracy and flexibility.
+
+2. Algorithm Structure:
+   - Porter Stemmer: Consists of specific suffix-stripping rules applied
+     sequentially. It goes through predefined steps, tailored mainly for
+     English.
+   - Snowball Stemmer: Provides a framework to define stemming rules. It's more
+     systematic and can be easily adapted for multiple languages.
+
+3. Performance:
+   - Porter Stemmer: May produce over- or under-stemming due to its simplicity,
+     potentially affecting performance on complex texts.
+   - Snowball Stemmer: Generally offers better performance and fewer errors
+     because of its more refined and comprehensive approach.
+
+4. Use Cases:
+   - Porter Stemmer: Suitable if simplicity and ease of implementation are
+     priorities. It’s useful for straightforward applications where the
+     precision of stemming isn’t critical.
+   - Snowball Stemmer: Preferred for applications requiring higher accuracy and
+     support for multiple languages.
+
+In general, the Snowball stemmer is seen as a more modern and flexible evolution
+of the Porter stemmer, balancing complexity and effectiveness.
+
+** Step 5: Stop Word Removal
+Optionally remove frequently occurring words (like "is", "and", "the") if they
+don't add meaning to your analysis.
+
+How can I determine if stop words add meaning or not?
+
+To determine if stop words add meaning, consider the following factors:
+
+1. Context and Domain: In some contexts, stop words might convey crucial
+   information (e.g., sentiment analysis where "not" changes meaning).
+   Understand the domain-specific impact.
+
+2. Task Requirements: For tasks like keyword extraction, removing stop words
+   helps highlight significant words. For sentiment and syntactic analysis, they
+   might be necessary.
+
+3. Frequency and Significance: Evaluate if stop words frequently appear without
+   adding unique information. Consider if their removal changes the text's
+   semantic integrity.
+
+4. Model and Algorithm Needs: Some algorithms can benefit from reduced noise by
+   removing stop words, while contextual models like transformers handle them
+   inherently.
+
+Review the specific needs and implications for accuracy and comprehension in your application to decide on removing stop words.
+
+** Step 6: Language or Domain-specific Adjustments
+Address any domain-specific transformations, such as handling specialized
+vocabulary or abbreviations. You might also deal with numeric terms (for
+example, converting numeric text to a canonical form).
+
+** Step 7: Output
+Return the normalized text (or list of tokens) that other components can
+consume. Depending on your downstream tasks, you might provide structured data
+for further processing.
+
+This high-level approach ensures your text is consistent, free of unnecessary
+noise, and ready for analysis or machine learning tasks.
